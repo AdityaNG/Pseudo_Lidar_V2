@@ -99,7 +99,8 @@ class Calibration(object):
         self.R0 = np.reshape(self.R0,[3,3])
 
         # Camera intrinsics and extrinsics
-        self.P3 =np.reshape(calibs['P3'], [3,4])
+        self.P3 =np.reshape(calibs['P2'], [3,4])
+        #self.P3 =np.reshape(calibs['P3'], [3,4])
         self.c_u = self.P[0,2]
         self.c_v = self.P[1,2]
         self.f_u = self.P[0,0]
@@ -117,12 +118,14 @@ class Calibration(object):
             for line in f.readlines():
                 line = line.rstrip()
                 if len(line)==0: continue
+                # print(line, "[END]")
                 key, value = line.split(':', 1)
                 # The only non-float values in these files are dates, which
                 # we don't care about anyway
                 try:
                     data[key] = np.array([float(x) for x in value.split()])
-                except ValueError:
+                except ValueError as e:
+                    print(e)
                     pass
 
         return data

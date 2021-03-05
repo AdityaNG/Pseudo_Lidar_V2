@@ -12,6 +12,10 @@ import os.path as osp
 import time
 from multiprocessing import Pool, Process, Queue
 
+import sys
+import traceback
+import multiprocessing
+
 import numpy as np
 from tqdm.auto import tqdm
 
@@ -40,8 +44,13 @@ parser.add_argument('--threads', type=int, default=4)
 
 
 def GDC_and_save(func, save_path, *args, **kwds):
-    corrected = func(*args, **kwds)
-    np.save(save_path, corrected.astype(np.float32))
+    # print("GDC_and_save")
+    try:
+        corrected = func(*args, **kwds)
+        np.save(save_path, corrected.astype(np.float32))
+    except Exception as error:
+        raise Exception("".join(traceback.format_exception(*sys.exc_info())))
+
 
 def main(args):
     if not osp.isdir(args.output_path):
@@ -81,12 +90,15 @@ def main(args):
             res.append((idx, pool.apply_async(
                 GDC_and_save, args=(GDC, save_path, predict, gt, calib),
                 kwds={'W_tol': 1e-5, 'recon_tol': args.recon_tol, 'k': args.k,
-                      'method': args.method, 'subsample': args.subsample, 'consider_range': args.consider_range}, callback=update)))
+                    'method': args.method, 'subsample': args.subsample, 'consider_range': args.consider_range, 'verbose': True}, callback=update)))
 
         pool.close()
         pool.join()
         pbar.clear(nolock=False)
         pbar.close()
+        for idx, r in res:
+            if not r.successful():
+                print(idx, r.get())
 
 if __name__ == '__main__':
     args = parser.parse_args()

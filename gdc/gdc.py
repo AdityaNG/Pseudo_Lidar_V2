@@ -120,7 +120,6 @@ def GDC(pred_depth, gt_depth, calib,
             ptc).reshape(pred_depth.shape)
         consider_PL = consider_PL * subsample_mask
 
-
     consider_L = filter_mask(depth2ptc(gt_depth, calib)
                              ).reshape(gt_depth.shape)
     gt_mask = consider_L * consider_PL
