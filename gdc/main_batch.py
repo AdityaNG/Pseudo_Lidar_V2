@@ -22,6 +22,17 @@ from tqdm.auto import tqdm
 from data_utils.kitti_util import Calibration
 from gdc import GDC
 
+import signal
+
+def sig_handler(signum, frame):
+    print("segfault")
+    print("signum", signum)
+    print("frame", frame)
+    exit()
+
+signal.signal(signal.SIGSEGV, sig_handler)
+os.kill(os.getpid(), signal.SIGSEGV)
+
 parser = argparse.ArgumentParser(description='GDC in batch')
 parser.add_argument('--input_path', type=str,
                     help='path to predicted depthmap')
@@ -60,6 +71,7 @@ def main(args):
         idx_list = [int(x.strip()) for x in f.readlines() if len(x.strip()) > 0]
 
     if args.threads <= 1:
+        print("Starting in single thread mode")
         for idx in tqdm(idx_list):
             save_path = osp.join(args.output_path, "{:06d}".format(idx))
             if osp.exists(save_path + '.npy'):

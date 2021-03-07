@@ -106,9 +106,9 @@ if __name__ == '__main__':
     parser.add_argument('--pl_path', default='/scratch/datasets', help='pseudo-lidar path')
     parser.add_argument('--sparse_pl_path', default='/scratch/datasets', help='sparsed pseudo lidar path')
     parser.add_argument('--slice', default=1, type=int)
-    parser.add_argument('--H', default=64, type=int)
-    parser.add_argument('--W', default=512, type=int)
-    parser.add_argument('--D', default=700, type=int)
+    parser.add_argument('--H', default=64, type=int, help="the row num of depth map, could be 64(default), 32, 16")
+    parser.add_argument('--W', default=512, type=int, help="the col num of depth map")
+    parser.add_argument('--D', default=700, type=int, help="")
     args = parser.parse_args()
 
     gen_sparse_points_all(args)
